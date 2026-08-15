@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { CheckCircle2, Lightbulb, Send, XCircle } from 'lucide-react'
 import type { Quest } from '../lib/gameData'
+import { findLesson, LessonPanel } from './LessonPanel'
 
 type Props = {
   quest: Quest | null
@@ -76,6 +77,11 @@ export function Terminal({ quest, onSolve }: Props) {
           </div>
         ) : (
           <>
+            {(() => {
+              const lesson = findLesson(quest.category, quest.tier)
+              return lesson ? <LessonPanel lesson={lesson} /> : null
+            })()}
+
             <div className="mb-3 rounded-lg border border-emerald-900/40 bg-emerald-950/20 px-3 py-2">
               <p className="text-xs text-emerald-400">
                 <span className="text-emerald-600 font-mono mr-1">task:</span>

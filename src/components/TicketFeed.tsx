@@ -1,5 +1,6 @@
 import { Database, ShieldAlert, Terminal as TerminalIcon, Wrench } from 'lucide-react'
 import type { Quest } from '../lib/gameData'
+import { TIERS } from '../lib/gameData'
 
 const CATEGORY_ICON = {
   sql: Database,
@@ -65,6 +66,13 @@ export function TicketFeed({ quests, selectedId, onSelect, completedCount }: Pro
                 <span className="ml-auto flex items-center gap-1 text-[10px] uppercase tracking-wide text-emerald-600 border border-emerald-800/50 rounded px-1.5 py-0.5 flex-shrink-0">
                   <Icon className="w-3 h-3" />
                   {CATEGORY_LABEL[quest.category]}
+                </span>
+              </div>
+              <div className="mb-1.5">
+                <span
+                  className={`text-[9px] uppercase tracking-wide border rounded px-1.5 py-0.5 ${TIERS[quest.tier].color}`}
+                >
+                  {TIERS[quest.tier].label}
                 </span>
               </div>
               <p className="text-xs text-emerald-400/90 leading-snug">

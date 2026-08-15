@@ -1,10 +1,12 @@
 export type QuestCategory = 'sql' | 'python' | 'security' | 'engineering'
+export type Tier = 'beginner' | 'intermediate' | 'advanced'
 
 export type Quest = {
   id: string
   from: string
   avatarColor: string
   category: QuestCategory
+  tier: Tier
   message: string
   prompt: string
   expectedAnswer: string | RegExp
@@ -24,12 +26,31 @@ export const SENDERS: Record<QuestCategory, { name: string; color: string }> = {
   engineering: { name: 'Devon (Platform Eng)', color: 'bg-cyan-500' },
 }
 
+export const TIERS: Record<Tier, { label: string; color: string; description: string }> = {
+  beginner: {
+    label: 'Beginner',
+    color: 'text-sky-300 border-sky-700/50 bg-sky-950/30',
+    description: 'Core fundamentals — single-table SQL, basic scripting.',
+  },
+  intermediate: {
+    label: 'Intermediate',
+    color: 'text-amber-300 border-amber-700/50 bg-amber-950/30',
+    description: 'Multi-table JOINs, moderate data cleaning and refactors.',
+  },
+  advanced: {
+    label: 'Advanced',
+    color: 'text-fuchsia-300 border-fuchsia-700/50 bg-fuchsia-950/30',
+    description: 'Window functions, ML fitting, pandas normalization.',
+  },
+}
+
 export const QUEST_BANK: Quest[] = [
   {
     id: 'sql-1',
     from: SENDERS.sql.name,
     avatarColor: SENDERS.sql.color,
     category: 'sql',
+    tier: 'beginner',
     message:
       "Hey! Can you write a SQL query to find the top sales rep by total revenue from the `sales` table?",
     prompt:
@@ -44,6 +65,7 @@ export const QUEST_BANK: Quest[] = [
     from: SENDERS.sql.name,
     avatarColor: SENDERS.sql.color,
     category: 'sql',
+    tier: 'intermediate',
     message:
       'Marketing needs a JOIN between `customers` and `orders` to see who has never ordered anything.',
     prompt:
@@ -58,6 +80,7 @@ export const QUEST_BANK: Quest[] = [
     from: SENDERS.sql.name,
     avatarColor: SENDERS.sql.color,
     category: 'sql',
+    tier: 'advanced',
     message:
       'Finance wants monthly revenue totals with a window function to show running totals. Can you draft it?',
     prompt: '-- Table: revenue(month TEXT, amount NUMERIC)\n-- Add a running total column',
@@ -71,6 +94,7 @@ export const QUEST_BANK: Quest[] = [
     from: SENDERS.python.name,
     avatarColor: SENDERS.python.color,
     category: 'python',
+    tier: 'intermediate',
     message:
       'Our customer dataset has missing values in the `age` column. Can you clean it with pandas?',
     prompt: "# df has a column 'age' with NaN values\n# Fill missing ages with the column mean",
@@ -84,6 +108,7 @@ export const QUEST_BANK: Quest[] = [
     from: SENDERS.python.name,
     avatarColor: SENDERS.python.color,
     category: 'python',
+    tier: 'advanced',
     message:
       'Can you train a quick scikit-learn model to predict churn from our features dataframe?',
     prompt: '# X, y are already defined\n# Fit a classifier to predict churn',
@@ -97,6 +122,7 @@ export const QUEST_BANK: Quest[] = [
     from: SENDERS.python.name,
     avatarColor: SENDERS.python.color,
     category: 'python',
+    tier: 'advanced',
     message: 'Quick one — normalize the `price` column so it is between 0 and 1.',
     prompt: "# df['price'] holds raw prices\n# Normalize to a 0-1 range",
     expectedAnswer: /(min\(\))[\s\S]*(max\(\))|minmaxscaler/i,
@@ -109,6 +135,7 @@ export const QUEST_BANK: Quest[] = [
     from: SENDERS.security.name,
     avatarColor: SENDERS.security.color,
     category: 'security',
+    tier: 'intermediate',
     message:
       "We're seeing weird traffic. Scan the server logs and flag IPs with more than 5 failed logins — could be brute-forcing.",
     prompt:
@@ -123,6 +150,7 @@ export const QUEST_BANK: Quest[] = [
     from: SENDERS.security.name,
     avatarColor: SENDERS.security.color,
     category: 'security',
+    tier: 'beginner',
     message:
       'We need to store user passwords securely before launch. Hash them with SHA-256 before saving.',
     prompt: '# password: str\n# Produce a SHA-256 hash of the password',
@@ -136,6 +164,7 @@ export const QUEST_BANK: Quest[] = [
     from: SENDERS.security.name,
     avatarColor: SENDERS.security.color,
     category: 'security',
+    tier: 'advanced',
     message:
       "Pen test found our login form is vulnerable to SQL injection. Rewrite the query to use parameterized inputs.",
     prompt: "-- Unsafe: \"SELECT * FROM users WHERE name = '\" + input + \"'\"\n-- Rewrite safely",
@@ -149,6 +178,7 @@ export const QUEST_BANK: Quest[] = [
     from: SENDERS.engineering.name,
     avatarColor: SENDERS.engineering.color,
     category: 'engineering',
+    tier: 'beginner',
     message:
       'The nightly ETL job keeps failing silently. Can you add a try/except that logs the error?',
     prompt: '# Wrap risky_job() so failures are logged, not silent',
@@ -162,6 +192,7 @@ export const QUEST_BANK: Quest[] = [
     from: SENDERS.engineering.name,
     avatarColor: SENDERS.engineering.color,
     category: 'engineering',
+    tier: 'intermediate',
     message:
       'We are duplicating the same API call in three places. Can you write a reusable function for it?',
     prompt: '# Refactor duplicate fetch logic into one reusable function',

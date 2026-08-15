@@ -1,0 +1,204 @@
+{
+  "lessons": [
+    {
+      "id": "sql-beginner-select",
+      "category": "sql",
+      "tier": "beginner",
+      "title": "SQL Basics: SELECT & Aggregation",
+      "goal": "Pull rows from a table and collapse them into per-group summaries, like total revenue per sales rep.",
+      "example": {
+        "code": "SELECT rep_name, SUM(revenue) AS total\nFROM sales\nGROUP BY rep_name\nORDER BY total DESC\nLIMIT 1;"
+      },
+      "keyConcepts": [
+        "Any column in **SELECT** that isn't wrapped in an aggregate function (SUM, COUNT, AVG) must appear in **GROUP BY** — the database needs to know how to collapse the other rows.",
+        "**ORDER BY ... DESC** sorts groups from highest to lowest based on the aggregate value.",
+        "**LIMIT 1** keeps only the top row after sorting — that's how you isolate a single 'winner'."
+      ],
+      "syntaxTemplate": {
+        "code": "SELECT <group_column>, <AGG_FUNC>(<value_column>) AS <alias>\nFROM <table>\nGROUP BY <group_column>\nORDER BY <alias> DESC\nLIMIT 1;"
+      },
+      "proTip": "If you SELECT a raw column that isn't aggregated and isn't in GROUP BY, most databases will error out (or silently pick an arbitrary row) — double-check every non-aggregated column is listed.",
+      "keyTerms": ["SELECT", "GROUP BY", "ORDER BY", "aggregate functions"]
+    },
+    {
+      "id": "sql-intermediate-joins",
+      "category": "sql",
+      "tier": "intermediate",
+      "title": "SQL Joins: Combining Tables",
+      "goal": "Combine rows from two related tables, and optionally find rows that exist in one table but not the other.",
+      "example": {
+        "code": "SELECT c.name\nFROM customers c\nLEFT JOIN orders o ON c.id = o.customer_id\nWHERE o.id IS NULL;"
+      },
+      "keyConcepts": [
+        "**INNER JOIN** only keeps rows that match in both tables; **LEFT JOIN** keeps every row from the left table even without a match, filling unmatched columns with NULL.",
+        "To find 'things with no match' (e.g. customers with zero orders), LEFT JOIN then filter **WHERE right_column IS NULL**.",
+        "Window functions like `SUM(...) OVER (ORDER BY ...)` compute running totals without collapsing rows the way GROUP BY does."
+      ],
+      "syntaxTemplate": {
+        "code": "SELECT <left>.<col>\nFROM <left_table> <left>\nLEFT JOIN <right_table> <right> ON <left>.<key> = <right>.<key>\nWHERE <right>.<col> IS NULL;"
+      },
+      "proTip": "Forgetting IS NULL after a LEFT JOIN is the #1 mistake — without it you just get every row, matched or not, and lose the 'missing rows' filter entirely.",
+      "keyTerms": ["INNER JOIN", "LEFT JOIN", "IS NULL", "window function"]
+    },
+    {
+      "id": "python-advanced-pandas",
+      "category": "python",
+      "tier": "advanced",
+      "title": "Pandas: Cleaning & Normalizing Data",
+      "goal": "Rescale a numeric column into a consistent 0-1 range so it plays nicely with ML models that are sensitive to feature scale.",
+      "example": {
+        "code": "df['price'] = (\n    (df['price'] - df['price'].min())\n    / (df['price'].max() - df['price'].min())\n)"
+      },
+      "keyConcepts": [
+        "Min-max normalization maps the smallest value to 0 and the largest to 1, preserving relative spacing between values.",
+        "You must compute **min()** and **max()** from the same column you're transforming — mixing columns breaks the scale.",
+        "This differs from standardization (z-score), which centers data around a mean of 0 instead of a fixed 0-1 range."
+      ],
+      "syntaxTemplate": {
+        "code": "df['<col>'] = (df['<col>'] - df['<col>'].min()) / (df['<col>'].max() - df['<col>'].min())"
+      },
+      "proTip": "If max() and min() are equal (a constant column), this formula divides by zero — guard against that edge case before normalizing.",
+      "keyTerms": ["fillna", "mean imputation", "min-max normalization", "MinMaxScaler"]
+    },
+    {
+      "id": "python-intermediate-cleaning",
+      "category": "python",
+      "tier": "intermediate",
+      "title": "Pandas: Handling Missing Data",
+      "goal": "Detect and fill missing values in a dataframe before running any analysis on it.",
+      "example": {
+        "code": "print(df['age'].isna().sum())\ndf['age'] = df['age'].fillna(df['age'].mean())"
+      },
+      "keyConcepts": [
+        "**isna()** returns a True/False mask for missing values; chaining **.sum()** counts how many are missing.",
+        "**fillna()** fills gaps with a value you choose — the column mean is a common, simple default for numeric data.",
+        "**dropna()** is the alternative — it removes rows/columns with gaps entirely, costing you data instead of estimating it."
+      ],
+      "syntaxTemplate": {
+        "code": "df['<col>'] = df['<col>'].fillna(df['<col>'].<mean_or_median>())"
+      },
+      "proTip": "Filling with the mean can distort skewed data (like income) — median is often the safer default when outliers are present.",
+      "keyTerms": ["NaN", "isna", "fillna", "dropna"]
+    },
+    {
+      "id": "python-advanced-ml",
+      "category": "python",
+      "tier": "advanced",
+      "title": "scikit-learn: Fitting a Classifier",
+      "goal": "Train a model to predict a target column, like churn, from a set of feature columns.",
+      "example": {
+        "code": "model = RandomForestClassifier()\nmodel.fit(X, y)\npredictions = model.predict(X)"
+      },
+      "keyConcepts": [
+        "**X** is your feature matrix (input columns); **y** is your target column (what you're predicting).",
+        "**.fit(X, y)** trains the model by learning patterns that connect features to the target.",
+        "**.predict(new_X)** applies what the model learned to new, unseen rows."
+      ],
+      "syntaxTemplate": {
+        "code": "model = <ClassifierClass>()\nmodel.fit(X, y)"
+      },
+      "proTip": "Fitting and predicting on the exact same data (like the quick example above) hides overfitting — always split into train/test sets in real projects.",
+      "keyTerms": ["X/y split", ".fit()", ".predict()", "RandomForestClassifier"]
+    },
+    {
+      "id": "security-beginner-hashing",
+      "category": "security",
+      "tier": "beginner",
+      "title": "Password Hashing Basics",
+      "goal": "Convert a plaintext password into a hash so the raw password is never stored anywhere.",
+      "example": {
+        "code": "import hashlib\nhashed = hashlib.sha256(password.encode()).hexdigest()"
+      },
+      "keyConcepts": [
+        "Hashing is one-way — you can't reverse a hash back into the original password, only compare a new hash against the stored one.",
+        "**.encode()** converts the string into bytes, which hashlib requires as input.",
+        "**.hexdigest()** returns the hash as a readable hex string, ready to store in a database."
+      ],
+      "syntaxTemplate": {
+        "code": "hashed = hashlib.sha256(<password_string>.encode()).hexdigest()"
+      },
+      "proTip": "SHA-256 alone is fast — too fast for password storage in production, since attackers can brute-force it quickly. Real systems add a per-user salt and a slow algorithm like bcrypt or Argon2.",
+      "keyTerms": ["hashing", "hashlib", "SHA-256", "salt"]
+    },
+    {
+      "id": "security-intermediate-logs",
+      "category": "security",
+      "tier": "intermediate",
+      "title": "Log Analysis: Spotting Brute Force",
+      "goal": "Scan a list of login attempts and flag IPs with an unusually high number of failures.",
+      "example": {
+        "code": "from collections import Counter\nfailed = Counter(ip for ip, status in logs if status == 'FAILED')\nflagged = [ip for ip, c in failed.items() if c > 5]"
+      },
+      "keyConcepts": [
+        "**Counter** tallies how many times each unique value (here, each IP) appears in an iterable.",
+        "A conditional comprehension (`if status == 'FAILED'`) filters before counting, so only failures get tallied.",
+        "The threshold (`c > 5`) turns raw counts into an actionable alert list — tune it based on what's normal for your traffic."
+      ],
+      "syntaxTemplate": {
+        "code": "counts = Counter(<key> for <item> in <data> if <condition>)\nflagged = [k for k, c in counts.items() if c > <threshold>]"
+      },
+      "proTip": "A fixed threshold like 5 ignores time — 5 failures in 1 minute is very different from 5 failures over a month. Real systems usually bucket by a time window too.",
+      "keyTerms": ["Counter", "log analysis", "threshold", "brute force"]
+    },
+    {
+      "id": "security-advanced-injection",
+      "category": "security",
+      "tier": "advanced",
+      "title": "Preventing SQL Injection",
+      "goal": "Rewrite a query built from raw string concatenation so user input can't be used to inject arbitrary SQL.",
+      "example": {
+        "code": "cursor.execute(\n    'SELECT * FROM users WHERE name = ?',\n    (input,)\n)"
+      },
+      "keyConcepts": [
+        "String-concatenating user input directly into SQL text lets an attacker close your quote early and inject their own SQL.",
+        "Parameterized queries use a placeholder (`?` or `%s`) and pass values separately — the driver escapes them safely.",
+        "This matters even if the input 'looks safe' in casual testing; injection payloads are specifically designed to slip past shallow checks."
+      ],
+      "syntaxTemplate": {
+        "code": "cursor.execute('SELECT * FROM <table> WHERE <col> = ?', (<value>,))"
+      },
+      "proTip": "Never assume 'we sanitize on the frontend' is enough — always parameterize on the backend, since frontend checks can be bypassed entirely.",
+      "keyTerms": ["SQL injection", "parameterized query", "placeholder binding"]
+    },
+    {
+      "id": "engineering-beginner-errors",
+      "category": "engineering",
+      "tier": "beginner",
+      "title": "Error Handling: try/except",
+      "goal": "Catch a failure so it's logged and visible, instead of crashing silently or crashing the whole program.",
+      "example": {
+        "code": "try:\n    risky_job()\nexcept Exception as e:\n    log.error(e)"
+      },
+      "keyConcepts": [
+        "**try** wraps the risky code; **except** catches errors raised inside it instead of letting them crash the program.",
+        "An empty except block (`except: pass`) is worse than no try/except at all — it hides failures completely.",
+        "Logging the exception (`log.error(e)`) preserves the failure reason so you can debug it later, even though execution continues."
+      ],
+      "syntaxTemplate": {
+        "code": "try:\n    <risky_call>()\nexcept <ExceptionType> as e:\n    log.error(e)"
+      },
+      "proTip": "Catching the broad `Exception` is fine as a top-level safety net, but catching specific exception types closer to the error gives you more useful handling.",
+      "keyTerms": ["try/except", "exception", "logging"]
+    },
+    {
+      "id": "engineering-intermediate-refactor",
+      "category": "engineering",
+      "tier": "intermediate",
+      "title": "Refactoring: Don't Repeat Yourself",
+      "goal": "Extract logic that's copy-pasted in multiple places into a single, reusable function.",
+      "example": {
+        "code": "def fetch_data(url):\n    response = requests.get(url)\n    return response.json()"
+      },
+      "keyConcepts": [
+        "If you find yourself copy-pasting the same block in three places, that's a signal to extract it into a function.",
+        "A reusable function centralizes behavior — fix a bug once, and every call site benefits automatically.",
+        "Good function names describe **what** the function does, not **how** it does it (e.g. `fetch_data`, not `get_stuff_from_url_and_parse`)."
+      ],
+      "syntaxTemplate": {
+        "code": "def <function_name>(<params>):\n    <logic>\n    return <result>"
+      },
+      "proTip": "Extracting too early — before you have 2-3 real duplicates — can add unnecessary abstraction. 'Rule of three' is a decent gut check.",
+      "keyTerms": ["DRY principle", "function extraction", "reusability"]
+    }
+  ]
+}
