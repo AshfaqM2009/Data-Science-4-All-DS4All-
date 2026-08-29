@@ -1,10 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { GameHeader } from '../components/GameHeader'
 import { TicketFeed } from '../components/TicketFeed'
 import { Terminal } from '../components/Terminal'
 import { SkillTree } from '../components/SkillTree'
-import { useGameState } from '../lib/useGameState'
+import { OnboardingModal } from '../components/OnboardingModal'
+import { useGameState, EXPERIENCE_STORAGE_KEY } from '../lib/useGameState'
 import type { Quest } from '../lib/gameData'
 
 export const Route = createFileRoute('/')({
@@ -22,11 +23,21 @@ function Home() {
     buyToolkit,
     buyAutomation,
     upgradeGpu,
+    applyExperienceLevel,
     jobTitle,
     xpNeeded,
   } = useGameState()
 
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null)
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  useEffect(() => {
+    if (!hydrated) return
+    const hasChosen = window.localStorage.getItem(EXPERIENCE_STORAGE_KEY)
+    if (!hasChosen) {
+      setShowOnboarding(true)
+    }
+  }, [hydrated])
 
   if (!hydrated) {
     return (
@@ -38,6 +49,15 @@ function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0e0c]">
+      {showOnboarding && (
+        <OnboardingModal
+          onSelect={(level) => {
+            applyExperienceLevel(level)
+            setShowOnboarding(false)
+          }}
+        />
+      )}
+
       <GameHeader
         jobTitle={jobTitle}
         budget={state.budget}
@@ -46,6 +66,7 @@ function Home() {
         level={state.level}
         xp={state.xp}
         xpNeeded={xpNeeded}
+        onChangeExperience={() => setShowOnboarding(true)}
       />
 
       <div className="flex-1 flex flex-col lg:flex-row min-h-0">
@@ -62,6 +83,7 @@ function Home() {
             completeQuest(quest)
             setSelectedQuest(null)
           }}
+          autoExpandLessons={state.autoExpandLessons}
         />
 
         <SkillTree

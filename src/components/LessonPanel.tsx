@@ -48,10 +48,11 @@ function CodeBlockView({ code }: { code: string }) {
 
 type Props = {
   lesson: Lesson
+  defaultExpanded?: boolean
 }
 
-export function LessonPanel({ lesson }: Props) {
-  const [expanded, setExpanded] = useState(false)
+export function LessonPanel({ lesson, defaultExpanded = false }: Props) {
+  const [expanded, setExpanded] = useState(defaultExpanded)
 
   return (
     <div className="mb-3 rounded-lg border border-teal-800/40 bg-teal-950/20 overflow-hidden">
@@ -76,7 +77,6 @@ export function LessonPanel({ lesson }: Props) {
 
       {expanded && (
         <div className="px-3 pb-3 flash-in space-y-3">
-          {/* The Goal */}
           <div>
             <p className="text-[10px] uppercase tracking-wide text-teal-500 font-semibold mb-1">
               The Goal
@@ -84,7 +84,6 @@ export function LessonPanel({ lesson }: Props) {
             <p className="text-[11px] text-teal-400/90 leading-relaxed">{lesson.goal}</p>
           </div>
 
-          {/* Quick Example */}
           <div>
             <p className="text-[10px] uppercase tracking-wide text-teal-500 font-semibold mb-1">
               Quick Example
@@ -92,7 +91,6 @@ export function LessonPanel({ lesson }: Props) {
             <CodeBlockView code={lesson.example.code} />
           </div>
 
-          {/* Key Concepts */}
           <div>
             <p className="text-[10px] uppercase tracking-wide text-teal-500 font-semibold mb-1">
               Key Concepts
@@ -107,7 +105,6 @@ export function LessonPanel({ lesson }: Props) {
             </ul>
           </div>
 
-          {/* The Blueprint (syntax scaffold) */}
           <div>
             <p className="text-[10px] uppercase tracking-wide text-teal-500 font-semibold mb-1">
               The Blueprint
@@ -115,7 +112,6 @@ export function LessonPanel({ lesson }: Props) {
             <CodeBlockView code={lesson.syntaxTemplate.code} />
           </div>
 
-          {/* Pro-Tip */}
           <div className="flex gap-2 rounded border border-amber-800/40 bg-amber-950/20 px-2.5 py-2">
             <Lightbulb className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
             <p className="text-[11px] text-amber-300/90 leading-relaxed">
@@ -124,7 +120,6 @@ export function LessonPanel({ lesson }: Props) {
             </p>
           </div>
 
-          {/* Key terms */}
           <div className="flex flex-wrap gap-1.5">
             {lesson.keyTerms.map((term) => (
               <span

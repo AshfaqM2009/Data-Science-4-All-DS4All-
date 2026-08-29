@@ -1,4 +1,4 @@
-import { Briefcase, DollarSign, Target, Ticket } from 'lucide-react'
+import { Briefcase, DollarSign, Target, Ticket, UserCog } from 'lucide-react'
 
 type Props = {
   jobTitle: string
@@ -8,6 +8,7 @@ type Props = {
   level: number
   xp: number
   xpNeeded: number
+  onChangeExperience: () => void
 }
 
 export function GameHeader({
@@ -18,6 +19,7 @@ export function GameHeader({
   level,
   xp,
   xpNeeded,
+  onChangeExperience,
 }: Props) {
   const xpPct = Math.min(100, Math.round((xp / xpNeeded) * 100))
 
@@ -32,6 +34,13 @@ export function GameHeader({
             <span className="text-[10px] uppercase tracking-widest text-emerald-600/70 border border-emerald-700/40 rounded px-1.5 py-0.5">
               beta
             </span>
+            <button
+              onClick={onChangeExperience}
+              className="flex items-center gap-1 text-[10px] text-emerald-600 hover:text-emerald-300 border border-emerald-800/50 hover:border-emerald-600/60 rounded px-1.5 py-0.5 transition-colors"
+            >
+              <UserCog className="w-3 h-3" />
+              Change Experience Level
+            </button>
           </div>
 
           <div className="flex flex-1 flex-wrap gap-3 justify-end">

@@ -1,13 +1,18 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   AUTOMATIONS,
+  EXPERIENCE_LEVELS,
   GPU_UPGRADES,
   QUEST_BANK,
   TOOLKITS,
   titleForLevel,
   xpForNextLevel,
+  type ExperienceLevel,
   type Quest,
+  type Tier,
 } from './gameData'
+
+export const EXPERIENCE_STORAGE_KEY = 'ds4all_experience_level'
 
 export type GameState = {
   budget: number
@@ -20,6 +25,9 @@ export type GameState = {
   unlockedAutomations: string[]
   activeQuestIds: string[]
   completedQuestIds: string[]
+  experienceLevel: ExperienceLevel | null
+  preferredTier: Tier | null
+  autoExpandLessons: boolean
   log: { id: string; text: string; kind: 'success' | 'error' | 'info' }[]
 }
 
@@ -36,6 +44,9 @@ const initialState: GameState = {
   unlockedAutomations: [],
   activeQuestIds: [],
   completedQuestIds: [],
+  experienceLevel: null,
+  preferredTier: null,
+  autoExpandLessons: false,
   log: [],
 }
 
@@ -58,8 +69,15 @@ function pickQuests(state: GameState, count: number): Quest[] {
       !state.activeQuestIds.includes(q.id) &&
       !state.completedQuestIds.includes(q.id),
   )
-  const shuffled = [...pool].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, count)
+  const preferred = state.preferredTier
+  const scored = pool
+    .map((q) => ({
+      quest: q,
+      priority: preferred && q.tier === preferred ? 0 : 1,
+      rand: Math.random(),
+    }))
+    .sort((a, b) => a.priority - b.priority || a.rand - b.rand)
+  return scored.slice(0, count).map((s) => s.quest)
 }
 
 export function useGameState() {
@@ -117,6 +135,43 @@ export function useGameState() {
     },
     [],
   )
+
+  const applyExperienceLevel = useCallback((level: ExperienceLevel) => {
+    const config = EXPERIENCE_LEVELS[level]
+    setState((s) => {
+      const base: GameState = {
+        ...s,
+        experienceLevel: level,
+        preferredTier: config.preferredTier,
+        autoExpandLessons: config.autoExpandLessons,
+        level: config.startLevel,
+        xp: config.xpBonus,
+        activeQuestIds: [],
+      }
+      const picks = pickQuests(base, 3)
+      const summary =
+        level === 'senior'
+          ? `Fast-tracked to Level ${config.startLevel}.`
+          : config.xpBonus
+            ? `+${config.xpBonus} XP starting bonus applied.`
+            : 'Starting fresh at Level 1.'
+      return {
+        ...base,
+        activeQuestIds: picks.map((p) => p.id),
+        log: [
+          {
+            id: `${Date.now()}-exp`,
+            text: `Experience level set to ${config.label}. ${summary}`,
+            kind: 'info' as const,
+          },
+          ...s.log,
+        ].slice(0, 40),
+      }
+    })
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(EXPERIENCE_STORAGE_KEY, level)
+    }
+  }, [])
 
   const completeQuest = useCallback((quest: Quest) => {
     setState((s) => {
@@ -207,6 +262,7 @@ export function useGameState() {
     buyToolkit,
     buyAutomation,
     upgradeGpu,
+    applyExperienceLevel,
     jobTitle: titleForLevel(state.level),
     xpNeeded: xpForNextLevel(state.level),
   }

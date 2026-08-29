@@ -6,11 +6,12 @@ import { findLesson, LessonPanel } from './LessonPanel'
 type Props = {
   quest: Quest | null
   onSolve: (quest: Quest) => void
+  autoExpandLessons?: boolean
 }
 
 type FeedbackState = { kind: 'success' | 'error'; message: string } | null
 
-export function Terminal({ quest, onSolve }: Props) {
+export function Terminal({ quest, onSolve, autoExpandLessons = false }: Props) {
   const [code, setCode] = useState('')
   const [feedback, setFeedback] = useState<FeedbackState>(null)
   const [showHint, setShowHint] = useState(false)
@@ -79,7 +80,9 @@ export function Terminal({ quest, onSolve }: Props) {
           <>
             {(() => {
               const lesson = findLesson(quest.category, quest.tier)
-              return lesson ? <LessonPanel lesson={lesson} /> : null
+              return lesson ? (
+                <LessonPanel lesson={lesson} defaultExpanded={autoExpandLessons} />
+              ) : null
             })()}
 
             <div className="mb-3 rounded-lg border border-emerald-900/40 bg-emerald-950/20 px-3 py-2">

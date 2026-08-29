@@ -1,5 +1,6 @@
 export type QuestCategory = 'sql' | 'python' | 'security' | 'engineering'
 export type Tier = 'beginner' | 'intermediate' | 'advanced'
+export type ExperienceLevel = 'newbie' | 'practitioner' | 'senior'
 
 export type Quest = {
   id: string
@@ -41,6 +42,43 @@ export const TIERS: Record<Tier, { label: string; color: string; description: st
     label: 'Advanced',
     color: 'text-fuchsia-300 border-fuchsia-700/50 bg-fuchsia-950/30',
     description: 'Window functions, ML fitting, pandas normalization.',
+  },
+}
+
+export const EXPERIENCE_LEVELS: Record <
+  ExperienceLevel,
+  {
+    label: string
+    description: string
+    startLevel: number
+    xpBonus: number
+    preferredTier: Tier
+    autoExpandLessons: boolean
+  }
+> = {
+  newbie: {
+    label: 'Newbie',
+    description: 'Never wrote code before. Start from the fundamentals with extra guidance.',
+    startLevel: 1,
+    xpBonus: 0,
+    preferredTier: 'beginner',
+    autoExpandLessons: true,
+  },
+  practitioner: {
+    label: 'Practitioner',
+    description: 'Know basic SQL/Python. Skip the basics and jump into real-world patterns.',
+    startLevel: 1,
+    xpBonus: 50,
+    preferredTier: 'intermediate',
+    autoExpandLessons: false,
+  },
+  senior: {
+    label: 'Senior / Specialist',
+    description: 'Experienced developer. Fast-track through early levels into advanced work.',
+    startLevel: 3,
+    xpBonus: 0,
+    preferredTier: 'advanced',
+    autoExpandLessons: false,
   },
 }
 
