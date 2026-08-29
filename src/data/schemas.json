@@ -1,0 +1,89 @@
+{
+  "tables": [
+    {
+      "id": "sales",
+      "name": "sales",
+      "description": "Revenue generated per sales rep. Used in aggregation and 'top result' quests.",
+      "columns": [
+        { "name": "rep_name", "type": "TEXT", "description": "Name of the sales representative." },
+        { "name": "revenue", "type": "NUMERIC", "description": "Revenue amount for a single sale record." }
+      ],
+      "sampleRows": [
+        { "rep_name": "Alicia Chen", "revenue": 4200 },
+        { "rep_name": "Marcus Lee", "revenue": 3100 },
+        { "rep_name": "Alicia Chen", "revenue": 2650 },
+        { "rep_name": "Priya Nair", "revenue": 5300 }
+      ]
+    },
+    {
+      "id": "customers",
+      "name": "customers",
+      "description": "Customer records. Used with orders to find customers with no purchase history.",
+      "columns": [
+        { "name": "id", "type": "INTEGER", "description": "Unique customer identifier." },
+        { "name": "name", "type": "TEXT", "description": "Customer's full name." }
+      ],
+      "sampleRows": [
+        { "id": 1, "name": "Jordan Blake" },
+        { "id": 2, "name": "Sam Rivera" },
+        { "id": 3, "name": "Taylor Osei" }
+      ]
+    },
+    {
+      "id": "orders",
+      "name": "orders",
+      "description": "Order records, linked to customers via customer_id.",
+      "columns": [
+        { "name": "id", "type": "INTEGER", "description": "Unique order identifier." },
+        { "name": "customer_id", "type": "INTEGER", "description": "References customers.id." }
+      ],
+      "sampleRows": [
+        { "id": 101, "customer_id": 1 },
+        { "id": 102, "customer_id": 1 },
+        { "id": 103, "customer_id": 2 }
+      ]
+    },
+    {
+      "id": "revenue",
+      "name": "revenue",
+      "description": "Monthly revenue totals. Used for running-total / window function quests.",
+      "columns": [
+        { "name": "month", "type": "TEXT", "description": "Calendar month, e.g. 'Jan'." },
+        { "name": "amount", "type": "NUMERIC", "description": "Total revenue for that month." }
+      ],
+      "sampleRows": [
+        { "month": "Jan", "amount": 12000 },
+        { "month": "Feb", "amount": 15500 },
+        { "month": "Mar", "amount": 14200 }
+      ]
+    },
+    {
+      "id": "users",
+      "name": "users",
+      "description": "User accounts. Used in password hashing and SQL injection quests.",
+      "columns": [
+        { "name": "id", "type": "INTEGER", "description": "Unique user identifier." },
+        { "name": "name", "type": "TEXT", "description": "Username used to log in." },
+        { "name": "password_hash", "type": "TEXT", "description": "SHA-256 hash of the password — never the raw password." }
+      ],
+      "sampleRows": [
+        { "id": 1, "name": "jblake", "password_hash": "5e884898da28..." },
+        { "id": 2, "name": "srivera", "password_hash": "ef92b778bafe..." }
+      ]
+    },
+    {
+      "id": "logs",
+      "name": "logs",
+      "description": "Raw login attempt logs. Used in brute-force detection quests.",
+      "columns": [
+        { "name": "ip", "type": "TEXT", "description": "Source IP address of the login attempt." },
+        { "name": "status", "type": "TEXT", "description": "'SUCCESS' or 'FAILED'." }
+      ],
+      "sampleRows": [
+        { "ip": "203.0.113.5", "status": "FAILED" },
+        { "ip": "203.0.113.5", "status": "FAILED" },
+        { "ip": "198.51.100.2", "status": "SUCCESS" }
+      ]
+    }
+  ]
+}

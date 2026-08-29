@@ -9,6 +9,9 @@ import { useGameState, EXPERIENCE_STORAGE_KEY } from '../lib/useGameState'
 import type { Quest } from '../lib/gameData'
 
 export const Route = createFileRoute('/')({
+  validateSearch: (search: Record<string, unknown>): { focus?: string } => ({
+    focus: typeof search.focus === 'string' ? search.focus : undefined,
+  }),
   component: Home,
 })
 
@@ -24,10 +27,12 @@ function Home() {
     buyAutomation,
     upgradeGpu,
     applyExperienceLevel,
+    ensureQuestActive,
     jobTitle,
     xpNeeded,
   } = useGameState()
 
+  const search = Route.useSearch()
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null)
   const [showOnboarding, setShowOnboarding] = useState(false)
 
@@ -38,6 +43,18 @@ function Home() {
       setShowOnboarding(true)
     }
   }, [hydrated])
+
+  // Deep link from Learn Mode's "Apply this in Hands-On Mode" button
+  useEffect(() => {
+    if (!hydrated || !search.focus) return
+    ensureQuestActive(search.focus)
+  }, [hydrated, search.focus, ensureQuestActive])
+
+  useEffect(() => {
+    if (!search.focus) return
+    const match = activeQuests.find((q) => q.id === search.focus)
+    if (match) setSelectedQuest(match)
+  }, [search.focus, activeQuests])
 
   if (!hydrated) {
     return (
@@ -66,6 +83,7 @@ function Home() {
         level={state.level}
         xp={state.xp}
         xpNeeded={xpNeeded}
+        mode="hands-on"
         onChangeExperience={() => setShowOnboarding(true)}
       />
 

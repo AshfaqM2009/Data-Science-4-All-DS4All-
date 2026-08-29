@@ -5,7 +5,7 @@ import lessonsData from '../data/lessons.json'
 
 type CodeBlock = { code: string }
 
-type Lesson = {
+export type Lesson = {
   id: string
   category: QuestCategory
   tier: Tier
@@ -18,14 +18,14 @@ type Lesson = {
   keyTerms: string[]
 }
 
-const LESSONS = lessonsData.lessons as Lesson[]
+export const LESSONS = lessonsData.lessons as Lesson[]
 
 export function findLesson(category: QuestCategory, tier: Tier): Lesson | undefined {
   return LESSONS.find((l) => l.category === category && l.tier === tier)
 }
 
 // Renders "**bold**" segments as styled <strong> without needing a markdown lib
-function renderBold(text: string) {
+export function renderBold(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g)
   return parts.map((part, i) =>
     part.startsWith('**') && part.endsWith('**') ? (
@@ -38,7 +38,7 @@ function renderBold(text: string) {
   )
 }
 
-function CodeBlockView({ code }: { code: string }) {
+export function CodeBlockView({ code }: { code: string }) {
   return (
     <pre className="text-[11px] font-mono text-emerald-300 bg-black/40 border border-teal-900/50 rounded px-2.5 py-2 overflow-x-auto whitespace-pre">
       {code}

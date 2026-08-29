@@ -173,6 +173,22 @@ export function useGameState() {
     }
   }, [])
 
+  // Forces a specific quest into the active feed — used by the
+  // "Apply this in Hands-On Mode" link from Learn Mode.
+  const ensureQuestActive = useCallback((questId: string) => {
+    setState((s) => {
+      if (s.activeQuestIds.includes(questId) || s.completedQuestIds.includes(questId)) {
+        return s
+      }
+      const quest = QUEST_BANK.find((q) => q.id === questId)
+      if (!quest) return s
+      return {
+        ...s,
+        activeQuestIds: [questId, ...s.activeQuestIds],
+      }
+    })
+  }, [])
+
   const completeQuest = useCallback((quest: Quest) => {
     setState((s) => {
       const gpu = GPU_UPGRADES.find((g) => g.level === s.gpuLevel) ?? GPU_UPGRADES[0]
@@ -263,6 +279,7 @@ export function useGameState() {
     buyAutomation,
     upgradeGpu,
     applyExperienceLevel,
+    ensureQuestActive,
     jobTitle: titleForLevel(state.level),
     xpNeeded: xpForNextLevel(state.level),
   }

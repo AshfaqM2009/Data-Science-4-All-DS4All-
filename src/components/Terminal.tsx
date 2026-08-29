@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { CheckCircle2, Lightbulb, Send, XCircle } from 'lucide-react'
+import { CheckCircle2, Database, Lightbulb, Send, XCircle } from 'lucide-react'
 import type { Quest } from '../lib/gameData'
 import { findLesson, LessonPanel } from './LessonPanel'
+import { DatabaseModal } from './DatabaseModal'
+import { getTablesForLesson } from '../lib/schemaLinks'
 
 type Props = {
   quest: Quest | null
@@ -15,6 +17,7 @@ export function Terminal({ quest, onSolve, autoExpandLessons = false }: Props) {
   const [code, setCode] = useState('')
   const [feedback, setFeedback] = useState<FeedbackState>(null)
   const [showHint, setShowHint] = useState(false)
+  const [showDb, setShowDb] = useState(false)
   const [solvedIds, setSolvedIds] = useState<Set<string>>(new Set())
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -46,6 +49,9 @@ export function Terminal({ quest, onSolve, autoExpandLessons = false }: Props) {
     }
   }
 
+  const lesson = quest ? findLesson(quest.category, quest.tier) : undefined
+  const relatedTables = lesson ? getTablesForLesson(lesson.id) : []
+
   return (
     <main className="flex-1 flex flex-col bg-[#080b09] min-w-0">
       <div className="px-4 py-3 border-b border-emerald-900/40 flex items-center justify-between">
@@ -57,15 +63,24 @@ export function Terminal({ quest, onSolve, autoExpandLessons = false }: Props) {
             {quest ? `~/quests/${quest.id}.sh` : '~/quests/idle'}
           </span>
         </div>
-        {quest && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowHint((s) => !s)}
+            onClick={() => setShowDb(true)}
             className="flex items-center gap-1 text-[11px] text-emerald-500 hover:text-emerald-300 border border-emerald-800/50 rounded px-2 py-1"
           >
-            <Lightbulb className="w-3.5 h-3.5" />
-            {showHint ? 'Hide hint' : 'Show hint'}
+            <Database className="w-3.5 h-3.5" />
+            Schema
           </button>
-        )}
+          {quest && (
+            <button
+              onClick={() => setShowHint((s) => !s)}
+              className="flex items-center gap-1 text-[11px] text-emerald-500 hover:text-emerald-300 border border-emerald-800/50 rounded px-2 py-1"
+            >
+              <Lightbulb className="w-3.5 h-3.5" />
+              {showHint ? 'Hide hint' : 'Show hint'}
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="flex-1 flex flex-col p-4 min-h-0">
@@ -78,12 +93,7 @@ export function Terminal({ quest, onSolve, autoExpandLessons = false }: Props) {
           </div>
         ) : (
           <>
-            {(() => {
-              const lesson = findLesson(quest.category, quest.tier)
-              return lesson ? (
-                <LessonPanel lesson={lesson} defaultExpanded={autoExpandLessons} />
-              ) : null
-            })()}
+            {lesson && <LessonPanel lesson={lesson} defaultExpanded={autoExpandLessons} />}
 
             <div className="mb-3 rounded-lg border border-emerald-900/40 bg-emerald-950/20 px-3 py-2">
               <p className="text-xs text-emerald-400">
@@ -142,6 +152,12 @@ export function Terminal({ quest, onSolve, autoExpandLessons = false }: Props) {
           </>
         )}
       </div>
+
+      <DatabaseModal
+        open={showDb}
+        onClose={() => setShowDb(false)}
+        highlightTableIds={relatedTables}
+      />
     </main>
   )
 }
