@@ -30,17 +30,20 @@ export const SENDERS: Record<QuestCategory, { name: string; color: string }> = {
 export const TIERS: Record<Tier, { label: string; color: string; description: string }> = {
   beginner: {
     label: 'Beginner',
-    color: 'text-sky-300 border-sky-700/50 bg-sky-950/30',
+    color:
+      'text-sky-700 border-sky-400 bg-sky-50 dark:text-sky-300 dark:border-sky-700/50 dark:bg-sky-950/30',
     description: 'Core fundamentals — single-table SQL, basic scripting.',
   },
   intermediate: {
     label: 'Intermediate',
-    color: 'text-amber-300 border-amber-700/50 bg-amber-950/30',
+    color:
+      'text-amber-700 border-amber-400 bg-amber-50 dark:text-amber-300 dark:border-amber-700/50 dark:bg-amber-950/30',
     description: 'Multi-table JOINs, moderate data cleaning and refactors.',
   },
   advanced: {
     label: 'Advanced',
-    color: 'text-fuchsia-300 border-fuchsia-700/50 bg-fuchsia-950/30',
+    color:
+      'text-fuchsia-700 border-fuchsia-400 bg-fuchsia-50 dark:text-fuchsia-300 dark:border-fuchsia-700/50 dark:bg-fuchsia-950/30',
     description: 'Window functions, ML fitting, pandas normalization.',
   },
 }

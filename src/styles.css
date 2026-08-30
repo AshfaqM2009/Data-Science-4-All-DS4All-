@@ -1,4 +1,23 @@
 @import "tailwindcss" source("../");
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg-page: #f6f8f7;
+  --bg-panel: #ffffff;
+  --bg-panel-2: #f0f4f2;
+  --border-subtle: rgba(6, 78, 59, 0.12);
+  --text-primary: #0f172a;
+  --text-muted: #4b5f57;
+}
+
+.dark {
+  --bg-page: #0a0e0c;
+  --bg-panel: #0d1310;
+  --bg-panel-2: #0b100e;
+  --border-subtle: rgba(6, 95, 70, 0.4);
+  --text-primary: #ecfdf5;
+  --text-muted: #6ee7b7;
+}
 
 body {
   @apply m-0;
@@ -7,7 +26,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #0a0e0c;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 code,
@@ -21,14 +42,14 @@ code,
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f1512;
+  background: var(--bg-panel-2);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1f3d2c;
+  background: var(--border-subtle);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2e5a41;
+  background: var(--text-muted);
 }
 
 @keyframes blink-caret {

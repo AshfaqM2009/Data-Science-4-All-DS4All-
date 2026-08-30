@@ -32,7 +32,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body className="bg-[#0a0e0c] text-emerald-50">
+      <body>
         {children}
         <Scripts />
       </body>

@@ -25,19 +25,19 @@ type Props = {
 
 export function TicketFeed({ quests, selectedId, onSelect, completedCount }: Props) {
   return (
-    <aside className="w-full lg:w-[320px] flex-shrink-0 border-r border-emerald-900/40 bg-[#0b100e] flex flex-col">
-      <div className="px-4 py-3 border-b border-emerald-900/40 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-emerald-300 flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 glow-pulse" />
+    <aside className="w-full lg:w-[320px] flex-shrink-0 border-r border-slate-200 dark:border-emerald-900/40 bg-white dark:bg-[#0b100e] flex flex-col">
+      <div className="px-4 py-3 border-b border-slate-200 dark:border-emerald-900/40 flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 glow-pulse" />
           #team-quests
         </h2>
-        <span className="text-[11px] text-emerald-700 font-mono">
+        <span className="text-[11px] text-slate-400 dark:text-emerald-700 font-mono">
           {completedCount} closed
         </span>
       </div>
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2.5">
         {quests.length === 0 && (
-          <div className="text-emerald-700 text-sm text-center mt-10 px-4">
+          <div className="text-slate-400 dark:text-emerald-700 text-sm text-center mt-10 px-4">
             No new tickets right now. Level up to unlock more quests!
           </div>
         )}
@@ -50,8 +50,8 @@ export function TicketFeed({ quests, selectedId, onSelect, completedCount }: Pro
               onClick={() => onSelect(quest)}
               className={`w-full text-left rounded-lg border px-3 py-2.5 transition-all flash-in ${
                 isSelected
-                  ? 'border-emerald-500/70 bg-emerald-900/30 shadow-[0_0_0_1px_rgba(52,211,153,0.3)]'
-                  : 'border-emerald-900/40 bg-emerald-950/20 hover:border-emerald-700/60 hover:bg-emerald-900/20'
+                  ? 'border-emerald-500/70 bg-emerald-50 dark:bg-emerald-900/30 shadow-[0_0_0_1px_rgba(52,211,153,0.3)]'
+                  : 'border-slate-200 dark:border-emerald-900/40 bg-slate-50 dark:bg-emerald-950/20 hover:border-emerald-400 dark:hover:border-emerald-700/60 hover:bg-emerald-50 dark:hover:bg-emerald-900/20'
               }`}
             >
               <div className="flex items-center gap-2 mb-1">
@@ -60,10 +60,10 @@ export function TicketFeed({ quests, selectedId, onSelect, completedCount }: Pro
                 >
                   {quest.from.charAt(0)}
                 </span>
-                <span className="text-xs font-medium text-emerald-200 truncate">
+                <span className="text-xs font-medium text-slate-800 dark:text-emerald-200 truncate">
                   {quest.from}
                 </span>
-                <span className="ml-auto flex items-center gap-1 text-[10px] uppercase tracking-wide text-emerald-600 border border-emerald-800/50 rounded px-1.5 py-0.5 flex-shrink-0">
+                <span className="ml-auto flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500 dark:text-emerald-600 border border-slate-300 dark:border-emerald-800/50 rounded px-1.5 py-0.5 flex-shrink-0">
                   <Icon className="w-3 h-3" />
                   {CATEGORY_LABEL[quest.category]}
                 </span>
@@ -75,10 +75,10 @@ export function TicketFeed({ quests, selectedId, onSelect, completedCount }: Pro
                   {TIERS[quest.tier].label}
                 </span>
               </div>
-              <p className="text-xs text-emerald-400/90 leading-snug">
+              <p className="text-xs text-slate-600 dark:text-emerald-400/90 leading-snug">
                 {quest.message}
               </p>
-              <div className="mt-1.5 flex gap-2 text-[10px] font-mono text-emerald-600">
+              <div className="mt-1.5 flex gap-2 text-[10px] font-mono text-slate-500 dark:text-emerald-600">
                 <span>+${quest.reward.budget}</span>
                 <span>+{quest.reward.xp}xp</span>
               </div>

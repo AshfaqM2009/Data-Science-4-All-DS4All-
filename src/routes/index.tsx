@@ -44,7 +44,6 @@ function Home() {
     }
   }, [hydrated])
 
-  // Deep link from Learn Mode's "Apply this in Hands-On Mode" button
   useEffect(() => {
     if (!hydrated || !search.focus) return
     ensureQuestActive(search.focus)
@@ -58,14 +57,14 @@ function Home() {
 
   if (!hydrated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0e0c] text-emerald-500 font-mono text-sm">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0a0e0c] text-emerald-600 dark:text-emerald-500 font-mono text-sm">
         booting DS4All environment_
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0e0c]">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0e0c]">
       {showOnboarding && (
         <OnboardingModal
           onSelect={(level) => {
