@@ -1,0 +1,232 @@
+{
+  "tracks": [
+    {
+      "id": "sql",
+      "label": "SQL",
+      "comingSoon": false,
+      "categories": [
+        {
+          "id": "foundational",
+          "label": "Foundational",
+          "modules": [
+            {
+              "id": "ddl",
+              "title": "DDL — CREATE, DROP, ALTER",
+              "keywords": ["CREATE", "DROP", "ALTER"],
+              "goal": "Define and modify the structure of database tables themselves, rather than the data inside them.",
+              "example": { "code": "CREATE TABLE employees (\n  id INTEGER,\n  name TEXT,\n  salary NUMERIC\n);" },
+              "keyConcepts": [
+                "**CREATE TABLE** defines a new table's columns and their data types.",
+                "**ALTER TABLE** changes an existing table's structure — e.g. adding or dropping a column — without touching its data.",
+                "**DROP TABLE** permanently deletes a table and everything in it; there's no undo."
+              ],
+              "blueprint": { "code": "CREATE TABLE <table_name> (\n  <column> <TYPE>,\n  <column> <TYPE>\n);\n\nALTER TABLE <table_name> ADD COLUMN <column> <TYPE>;\n\nDROP TABLE <table_name>;" },
+              "proTip": "DROP TABLE has no confirmation step in most databases — always double-check you're targeting the right table (and environment) before running it."
+            },
+            {
+              "id": "dml",
+              "title": "DML — INSERT, UPDATE, DELETE",
+              "keywords": ["INSERT", "UPDATE", "DELETE"],
+              "goal": "Add, modify, and remove the actual rows of data inside a table.",
+              "example": { "code": "INSERT INTO employees (name, salary) VALUES ('Jordan Blake', 65000);\nUPDATE employees SET salary = 70000 WHERE name = 'Jordan Blake';\nDELETE FROM employees WHERE salary < 40000;" },
+              "keyConcepts": [
+                "**INSERT** adds new rows; you can specify exact columns or provide values for all of them in order.",
+                "**UPDATE** without a WHERE clause changes every row in the table — always pair it with a filter unless that's truly the intent.",
+                "**DELETE** removes rows permanently — like UPDATE, an unfiltered DELETE wipes the entire table."
+              ],
+              "blueprint": { "code": "INSERT INTO <table> (<col1>, <col2>) VALUES (<val1>, <val2>);\nUPDATE <table> SET <col> = <value> WHERE <condition>;\nDELETE FROM <table> WHERE <condition>;" },
+              "proTip": "Before running an UPDATE or DELETE, run the same WHERE clause as a SELECT first to confirm exactly which rows you're about to affect."
+            },
+            {
+              "id": "select",
+              "title": "SELECT Basics",
+              "keywords": ["SELECT", "FROM", "AS"],
+              "goal": "Retrieve specific columns (or all columns) from a table.",
+              "example": { "code": "SELECT name, salary\nFROM employees;" },
+              "keyConcepts": [
+                "**SELECT \\*** returns every column — fine for exploring, but naming columns explicitly is safer in real applications.",
+                "**AS** renames a column or expression in the output without changing the underlying data."
+              ],
+              "blueprint": { "code": "SELECT <col1>, <col2> AS <alias>\nFROM <table>;" },
+              "proTip": "SELECT * is convenient while exploring a new table, but explicit column lists make queries more predictable when a table's structure changes later."
+            },
+            {
+              "id": "where",
+              "title": "WHERE — Filtering Rows",
+              "keywords": ["WHERE", "AND", "OR", "IN", "BETWEEN"],
+              "goal": "Narrow a result set down to only the rows that match a condition.",
+              "example": { "code": "SELECT name, salary\nFROM employees\nWHERE salary > 60000 AND name != 'Jordan Blake';" },
+              "keyConcepts": [
+                "WHERE runs **before** grouping — it filters individual rows, not aggregated groups (that's what HAVING is for).",
+                "**AND**/**OR** combine multiple conditions; **IN** and **BETWEEN** are shorthands for common comparison patterns."
+              ],
+              "blueprint": { "code": "SELECT <cols>\nFROM <table>\nWHERE <condition> AND/OR <condition>;" },
+              "proTip": "WHERE can't reference an aliased column defined in the same SELECT — that limitation is part of why HAVING exists for filtering after aggregation."
+            }
+          ]
+        },
+        {
+          "id": "intermediate",
+          "label": "Intermediate",
+          "modules": [
+            {
+              "id": "group-by",
+              "title": "Aggregation — GROUP BY",
+              "keywords": ["GROUP BY", "SUM", "COUNT", "AVG", "HAVING"],
+              "goal": "Collapse many rows into summary rows, one per unique value of a column.",
+              "example": { "code": "SELECT department, AVG(salary) AS avg_salary\nFROM employees\nGROUP BY department\nHAVING AVG(salary) > 50000;" },
+              "keyConcepts": [
+                "Every non-aggregated column in SELECT must appear in GROUP BY.",
+                "**HAVING** filters groups after aggregation — it's to GROUP BY what WHERE is to individual rows."
+              ],
+              "blueprint": { "code": "SELECT <group_col>, <AGG_FUNC>(<col>)\nFROM <table>\nGROUP BY <group_col>\nHAVING <AGG_FUNC>(<col>) <condition>;" },
+              "proTip": "If you need to filter on a raw column value, use WHERE (runs first); if you need to filter on an aggregate result, use HAVING (runs after grouping)."
+            },
+            {
+              "id": "order-by",
+              "title": "Sorting — ORDER BY",
+              "keywords": ["ORDER BY", "ASC", "DESC"],
+              "goal": "Control the order rows appear in a result set.",
+              "example": { "code": "SELECT name, salary\nFROM employees\nORDER BY salary DESC, name ASC;" },
+              "keyConcepts": [
+                "**DESC** sorts highest-to-lowest; **ASC** (the default) sorts lowest-to-highest.",
+                "Multiple columns in ORDER BY break ties — later columns only matter when earlier ones are equal."
+              ],
+              "blueprint": { "code": "SELECT <cols>\nFROM <table>\nORDER BY <col1> DESC, <col2> ASC;" },
+              "proTip": "Without ORDER BY, SQL makes no guarantee about row order at all — never rely on 'the order it happens to come back in'."
+            },
+            {
+              "id": "join-inner",
+              "title": "Joins — INNER JOIN",
+              "keywords": ["INNER JOIN", "ON"],
+              "goal": "Combine rows from two tables, keeping only rows that have a match in both.",
+              "example": { "code": "SELECT o.id, c.name\nFROM orders o\nINNER JOIN customers c ON o.customer_id = c.id;" },
+              "keyConcepts": [
+                "A row only appears in the result if it has a matching row on **both** sides of the join.",
+                "This is the default join type — writing just JOIN means INNER JOIN in most databases."
+              ],
+              "blueprint": { "code": "SELECT <cols>\nFROM <left_table> l\nINNER JOIN <right_table> r ON l.<key> = r.<key>;" },
+              "proTip": "If rows are unexpectedly missing from your results, check whether an INNER JOIN is silently dropping unmatched rows — a LEFT JOIN might be what you actually need."
+            },
+            {
+              "id": "join-left-outer",
+              "title": "Joins — LEFT OUTER JOIN",
+              "keywords": ["LEFT JOIN", "LEFT OUTER JOIN", "IS NULL"],
+              "goal": "Keep every row from the left table, filling in NULLs for any unmatched right-side columns.",
+              "example": { "code": "SELECT c.name, o.id\nFROM customers c\nLEFT JOIN orders o ON c.id = o.customer_id\nWHERE o.id IS NULL;" },
+              "keyConcepts": [
+                "Every left-table row appears at least once, whether or not it has a match on the right.",
+                "Filtering **WHERE right.col IS NULL** after a LEFT JOIN is the standard pattern for finding 'things with no match'."
+              ],
+              "blueprint": { "code": "SELECT <cols>\nFROM <left_table> l\nLEFT JOIN <right_table> r ON l.<key> = r.<key>;" },
+              "proTip": "'LEFT OUTER JOIN' and 'LEFT JOIN' are the exact same thing — the word OUTER is optional in virtually every SQL dialect."
+            },
+            {
+              "id": "join-right-outer",
+              "title": "Joins — RIGHT OUTER JOIN",
+              "keywords": ["RIGHT JOIN", "RIGHT OUTER JOIN"],
+              "goal": "Keep every row from the right table, filling in NULLs for unmatched left-side columns — the mirror image of a LEFT JOIN.",
+              "example": { "code": "SELECT c.name, o.id\nFROM orders o\nRIGHT JOIN customers c ON o.customer_id = c.id;" },
+              "keyConcepts": [
+                "A RIGHT JOIN is identical to a LEFT JOIN with the table order swapped — many teams just swap tables and use LEFT JOIN for consistency.",
+                "Some databases support RIGHT JOIN less consistently than LEFT JOIN, which is part of why LEFT JOIN is more common in practice."
+              ],
+              "blueprint": { "code": "SELECT <cols>\nFROM <left_table> l\nRIGHT JOIN <right_table> r ON l.<key> = r.<key>;" },
+              "proTip": "You can always rewrite a RIGHT JOIN as a LEFT JOIN by swapping which table comes first — many teams do this purely for readability consistency."
+            },
+            {
+              "id": "join-full-outer",
+              "title": "Joins — FULL OUTER JOIN",
+              "keywords": ["FULL OUTER JOIN", "FULL JOIN"],
+              "goal": "Keep every row from both tables, matched where possible and filled with NULLs where not.",
+              "example": { "code": "SELECT c.name, o.id\nFROM customers c\nFULL OUTER JOIN orders o ON c.id = o.customer_id;" },
+              "keyConcepts": [
+                "Combines the behavior of LEFT and RIGHT JOIN — nothing from either table is dropped.",
+                "Rows with no match on either side will have NULLs in the columns from the other table."
+              ],
+              "blueprint": { "code": "SELECT <cols>\nFROM <table_a> a\nFULL OUTER JOIN <table_b> b ON a.<key> = b.<key>;" },
+              "proTip": "SQLite doesn't support FULL OUTER JOIN natively — it's commonly emulated with a UNION of a LEFT JOIN and a RIGHT JOIN when needed."
+            },
+            {
+              "id": "case-statements",
+              "title": "CASE Statements",
+              "keywords": ["CASE", "WHEN", "THEN", "ELSE", "END"],
+              "goal": "Add conditional, if/else-style logic directly inside a query.",
+              "example": { "code": "SELECT name,\n  CASE\n    WHEN salary >= 80000 THEN 'Senior'\n    WHEN salary >= 50000 THEN 'Mid'\n    ELSE 'Junior'\n  END AS level\nFROM employees;" },
+              "keyConcepts": [
+                "CASE checks WHEN conditions **in order** and stops at the first match — order matters.",
+                "**ELSE** is optional; without it, non-matching rows simply get NULL instead of a fallback value."
+              ],
+              "blueprint": { "code": "CASE\n  WHEN <condition> THEN <value>\n  WHEN <condition> THEN <value>\n  ELSE <default>\nEND AS <alias>" },
+              "proTip": "CASE can be used anywhere an expression is valid — not just in SELECT, but also inside WHERE, ORDER BY, and even GROUP BY."
+            }
+          ]
+        },
+        {
+          "id": "advanced",
+          "label": "Advanced",
+          "modules": [
+            {
+              "id": "subqueries",
+              "title": "Subqueries",
+              "keywords": ["Subquery", "Nested Query", "IN", "EXISTS"],
+              "goal": "Use the result of one query as an input to another — nesting a query inside a query.",
+              "example": { "code": "SELECT name\nFROM employees\nWHERE department IN (\n  SELECT department FROM departments WHERE budget > 100000\n);" },
+              "keyConcepts": [
+                "A subquery in the WHERE clause runs **once**, independent of the outer query's rows — that's what makes it 'non-correlated'.",
+                "Subqueries can appear in SELECT, FROM, or WHERE clauses, not just as filters."
+              ],
+              "blueprint": { "code": "SELECT <cols>\nFROM <table>\nWHERE <col> IN (\n  SELECT <col> FROM <other_table> WHERE <condition>\n);" },
+              "proTip": "If a subquery only ever returns a fixed, independent result, it's usually clearer than a JOIN — but for row-by-row logic, a correlated subquery or JOIN is often the better tool."
+            },
+            {
+              "id": "correlated-subqueries",
+              "title": "Correlated Subqueries",
+              "keywords": ["Correlated Subquery", "EXISTS"],
+              "goal": "Run a subquery once per row of the outer query, referencing a column from that outer row.",
+              "example": { "code": "SELECT name\nFROM employees e\nWHERE salary > (\n  SELECT AVG(salary) FROM employees WHERE department = e.department\n);" },
+              "keyConcepts": [
+                "Unlike a regular subquery, a correlated subquery references a column from the **outer** query (here, `e.department`) — it can't run on its own.",
+                "Because it re-executes per outer row, correlated subqueries can be slower than an equivalent JOIN on large tables."
+              ],
+              "blueprint": { "code": "SELECT <cols>\nFROM <table> t\nWHERE <col> <op> (\n  SELECT <agg_or_col> FROM <table> WHERE <inner_col> = t.<outer_col>\n);" },
+              "proTip": "A quick test for 'is this correlated?' — if it references a column from the outer table, it is; if it could run completely on its own, it isn't."
+            },
+            {
+              "id": "ctes",
+              "title": "CTEs (WITH clause)",
+              "keywords": ["WITH", "CTE", "Common Table Expression"],
+              "goal": "Give a subquery a name and reuse it, making complex queries far easier to read than deeply nested subqueries.",
+              "example": { "code": "WITH high_earners AS (\n  SELECT * FROM employees WHERE salary > 80000\n)\nSELECT department, COUNT(*)\nFROM high_earners\nGROUP BY department;" },
+              "keyConcepts": [
+                "A CTE (Common Table Expression) is defined with **WITH** and behaves like a temporary, named result set for the rest of that query.",
+                "CTEs can be chained — you can define multiple, and later ones can reference earlier ones."
+              ],
+              "blueprint": { "code": "WITH <name> AS (\n  SELECT ...\n)\nSELECT ...\nFROM <name>;" },
+              "proTip": "CTEs don't persist beyond the query they're defined in — they're purely a readability tool, not a stored table."
+            },
+            {
+              "id": "window-functions",
+              "title": "Window Functions",
+              "keywords": ["OVER", "PARTITION BY", "ROW_NUMBER", "RANK"],
+              "goal": "Compute values across a set of rows related to the current row, without collapsing them into groups the way GROUP BY does.",
+              "example": { "code": "SELECT name, department, salary,\n  RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS dept_rank\nFROM employees;" },
+              "keyConcepts": [
+                "**OVER (...)** is what makes a function a window function — it defines the 'window' of rows the calculation applies to.",
+                "**PARTITION BY** resets the calculation for each group, similar to GROUP BY — but unlike GROUP BY, individual rows aren't collapsed."
+              ],
+              "blueprint": { "code": "SELECT <cols>,\n  <FUNC>() OVER (PARTITION BY <col> ORDER BY <col>) AS <alias>\nFROM <table>;" },
+              "proTip": "RANK() leaves gaps after ties (1, 1, 3); DENSE_RANK() doesn't (1, 1, 2) — pick based on whether ties should 'use up' a rank position."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pandas",
+      "label": "Python Pandas & DataFrames",
+      "comingSoon": true,
+      "categories": []
+    }
+  ]
+}
