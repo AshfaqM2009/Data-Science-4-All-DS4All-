@@ -1,7 +1,13 @@
 import { Database } from 'lucide-react'
 import schemasData from '../data/schemas.json'
 
-type Column = { name: string; type: string; description: string }
+type Column = {
+  name: string
+  type: string
+  description: string
+  key?: 'PK' | 'FK'
+  computed?: boolean
+}
 type TableSchema = {
   id: string
   name: string
@@ -74,7 +80,24 @@ export function SchemaViewer({ tableIds, highlightIds = [] }: Props) {
                   {table.columns.map((col) => (
                     <tr key={col.name} className="border-b border-slate-100 dark:border-emerald-950/50">
                       <td className="py-1 pr-3 font-mono text-slate-800 dark:text-emerald-300">
-                        {col.name}
+                        <span className="flex items-center gap-1.5">
+                          {col.name}
+                          {col.key === 'PK' && (
+                            <span className="text-[9px] font-sans font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300 border border-amber-400 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-950/30 rounded px-1 py-0.5">
+                              PK
+                            </span>
+                          )}
+                          {col.key === 'FK' && (
+                            <span className="text-[9px] font-sans font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300 border border-sky-400 dark:border-sky-700/50 bg-sky-50 dark:bg-sky-950/30 rounded px-1 py-0.5">
+                              FK
+                            </span>
+                          )}
+                          {col.computed && (
+                            <span className="text-[9px] font-sans font-semibold uppercase tracking-wide text-fuchsia-700 dark:text-fuchsia-300 border border-fuchsia-400 dark:border-fuchsia-700/50 bg-fuchsia-50 dark:bg-fuchsia-950/30 rounded px-1 py-0.5">
+                              calc
+                            </span>
+                          )}
+                        </span>
                       </td>
                       <td className="py-1 pr-3 font-mono text-teal-700 dark:text-teal-400">
                         {col.type}

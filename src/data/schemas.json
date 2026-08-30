@@ -16,34 +16,6 @@
       ]
     },
     {
-      "id": "customers",
-      "name": "customers",
-      "description": "Customer records. Used with orders to find customers with no purchase history.",
-      "columns": [
-        { "name": "id", "type": "INTEGER", "description": "Unique customer identifier." },
-        { "name": "name", "type": "TEXT", "description": "Customer's full name." }
-      ],
-      "sampleRows": [
-        { "id": 1, "name": "Jordan Blake" },
-        { "id": 2, "name": "Sam Rivera" },
-        { "id": 3, "name": "Taylor Osei" }
-      ]
-    },
-    {
-      "id": "orders",
-      "name": "orders",
-      "description": "Order records, linked to customers via customer_id.",
-      "columns": [
-        { "name": "id", "type": "INTEGER", "description": "Unique order identifier." },
-        { "name": "customer_id", "type": "INTEGER", "description": "References customers.id." }
-      ],
-      "sampleRows": [
-        { "id": 101, "customer_id": 1 },
-        { "id": 102, "customer_id": 1 },
-        { "id": 103, "customer_id": 2 }
-      ]
-    },
-    {
       "id": "revenue",
       "name": "revenue",
       "description": "Monthly revenue totals. Used for running-total / window function quests.",
@@ -58,20 +30,6 @@
       ]
     },
     {
-      "id": "users",
-      "name": "users",
-      "description": "User accounts. Used in password hashing and SQL injection quests.",
-      "columns": [
-        { "name": "id", "type": "INTEGER", "description": "Unique user identifier." },
-        { "name": "name", "type": "TEXT", "description": "Username used to log in." },
-        { "name": "password_hash", "type": "TEXT", "description": "SHA-256 hash of the password — never the raw password." }
-      ],
-      "sampleRows": [
-        { "id": 1, "name": "jblake", "password_hash": "5e884898da28..." },
-        { "id": 2, "name": "srivera", "password_hash": "ef92b778bafe..." }
-      ]
-    },
-    {
       "id": "logs",
       "name": "logs",
       "description": "Raw login attempt logs. Used in brute-force detection quests.",
@@ -83,6 +41,75 @@
         { "ip": "203.0.113.5", "status": "FAILED" },
         { "ip": "203.0.113.5", "status": "FAILED" },
         { "ip": "198.51.100.2", "status": "SUCCESS" }
+      ]
+    },
+    {
+      "id": "users",
+      "name": "users",
+      "description": "Registered platform users.",
+      "columns": [
+        { "name": "user_id", "type": "INTEGER", "description": "Unique user identifier.", "key": "PK" },
+        { "name": "email_addr", "type": "TEXT", "description": "User's email address." },
+        { "name": "start_date", "type": "DATE", "description": "Date the user account was created." }
+      ],
+      "sampleRows": [
+        { "user_id": 1, "email_addr": "jblake@example.com", "start_date": "2024-02-11" },
+        { "user_id": 2, "email_addr": "srivera@example.com", "start_date": "2024-05-03" },
+        { "user_id": 3, "email_addr": "tosei@example.com", "start_date": "2025-01-22" }
+      ]
+    },
+    {
+      "id": "customers",
+      "name": "customers",
+      "description": "Customer records used across orders and account management.",
+      "columns": [
+        { "name": "customer_id", "type": "INTEGER", "description": "Unique customer identifier.", "key": "PK" },
+        { "name": "cust_name", "type": "TEXT", "description": "Customer's full name." },
+        { "name": "phone_number", "type": "TEXT", "description": "Customer's contact phone number." },
+        { "name": "email_addr", "type": "TEXT", "description": "Customer's email address." },
+        { "name": "address", "type": "TEXT", "description": "Customer's mailing address." }
+      ],
+      "sampleRows": [
+        { "customer_id": 101, "cust_name": "Jordan Blake", "phone_number": "555-0142", "email_addr": "jblake@example.com", "address": "12 Birch St, Austin, TX" },
+        { "customer_id": 102, "cust_name": "Sam Rivera", "phone_number": "555-0198", "email_addr": "srivera@example.com", "address": "48 Maple Ave, Denver, CO" },
+        { "customer_id": 103, "cust_name": "Taylor Osei", "phone_number": "555-0177", "email_addr": "tosei@example.com", "address": "9 Cedar Ln, Atlanta, GA" }
+      ]
+    },
+    {
+      "id": "products",
+      "name": "products",
+      "description": "Product catalog available for purchase.",
+      "columns": [
+        { "name": "product_id", "type": "INTEGER", "description": "Unique product identifier.", "key": "PK" },
+        { "name": "product_name", "type": "TEXT", "description": "Display name of the product." },
+        { "name": "category", "type": "TEXT", "description": "Product category, e.g. 'Electronics'." },
+        { "name": "unit_price", "type": "NUMERIC", "description": "Standard price per unit before any order-specific pricing." },
+        { "name": "stock_qty", "type": "INTEGER", "description": "Units currently in stock." }
+      ],
+      "sampleRows": [
+        { "product_id": 501, "product_name": "Wireless Mouse", "category": "Electronics", "unit_price": 24.99, "stock_qty": 340 },
+        { "product_id": 502, "product_name": "Standing Desk", "category": "Furniture", "unit_price": 289.0, "stock_qty": 52 },
+        { "product_id": 503, "product_name": "USB-C Hub", "category": "Electronics", "unit_price": 39.5, "stock_qty": 187 }
+      ]
+    },
+    {
+      "id": "orders",
+      "name": "orders",
+      "description": "Order records linking customers to purchased products.",
+      "columns": [
+        { "name": "order_id", "type": "INTEGER", "description": "Unique order identifier.", "key": "PK" },
+        { "name": "customer_id", "type": "INTEGER", "description": "References customers.customer_id.", "key": "FK" },
+        { "name": "product_id", "type": "INTEGER", "description": "References products.product_id.", "key": "FK" },
+        { "name": "order_date", "type": "DATE", "description": "Date the order was placed." },
+        { "name": "qty", "type": "INTEGER", "description": "Quantity of the product ordered." },
+        { "name": "price", "type": "NUMERIC", "description": "Price per unit at the time of this order." },
+        { "name": "tax_rate", "type": "NUMERIC", "description": "Tax multiplier applied to this order, e.g. 1.08 for 8% tax." },
+        { "name": "total_price", "type": "NUMERIC", "description": "Calculated as qty * price * tax_rate.", "computed": true }
+      ],
+      "sampleRows": [
+        { "order_id": 9001, "customer_id": 101, "product_id": 501, "order_date": "2025-03-04", "qty": 2, "price": 24.99, "tax_rate": 1.08, "total_price": 53.98 },
+        { "order_id": 9002, "customer_id": 102, "product_id": 502, "order_date": "2025-03-06", "qty": 1, "price": 289.0, "tax_rate": 1.08, "total_price": 312.12 },
+        { "order_id": 9003, "customer_id": 101, "product_id": 503, "order_date": "2025-03-10", "qty": 3, "price": 39.5, "tax_rate": 1.08, "total_price": 127.98 }
       ]
     }
   ]
